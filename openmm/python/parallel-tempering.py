@@ -59,19 +59,25 @@ __version__ = "$Id: $"
 if __name__ == "__main__":
 
     # Select behavior based on command-line arguments.
+    data_directory = '../data/'
     if sys.argv[1] == 'neighborswap':
-        store_filename  = 'data/parallel-tempering-neighborswap-alaninedipeptide-new.nc' # output netCDF filename
+        store_filename  = 'parallel-tempering-neighborswap-alaninedipeptide-new.nc' # output netCDF filename
         replica_mixing_scheme = 'swap-neighbors'
     elif sys.argv[1] == 'allswap':
-        store_filename  = 'data/parallel-tempering-allswap-alaninedipeptide-new.nc' # output netCDF filename
+        store_filename  = 'parallel-tempering-allswap-alaninedipeptide-new.nc' # output netCDF filename
         replica_mixing_scheme = 'swap-all'
     else:
         print "Unrecognized command line arguments."
         stop
+    # Create data directory if it doesn't exist.
+    if not os.path.exists(data_directory):
+        os.makedirs(data_directory)
+    # Append data directory.
+    store_filename = os.path.join(data_directory, store_filename)
 
     # Alanine dipeptide in implicit solvent.
-    prmtop_filename = os.path.join('systems', 'alanine-dipeptide.prmtop') # input prmtop file
-    crd_filename    = os.path.join('systems', 'alanine-dipeptide.crd') # input coordinate file
+    prmtop_filename = os.path.join('../systems', 'alanine-dipeptide.prmtop') # input prmtop file
+    crd_filename    = os.path.join('../systems', 'alanine-dipeptide.crd') # input coordinate file
     Tmin = 270.0 * units.kelvin # minimum temperature
     Tmax = 600.0 * units.kelvin # maximum temperature
     ntemps = 20 # number of replicas    
@@ -103,9 +109,8 @@ if __name__ == "__main__":
     equilibrate = False # equilibrate
 
     # Select platform: one of 'Reference' (CPU-only), 'Cuda' (NVIDIA Cuda), or 'OpenCL' (for OS X 10.6 with OpenCL OpenMM compiled)
-    #platform = openmm.Platform.getPlatformByName("CUDA")
-    #platform = openmm.Platform.getPlatformByName("OpenCL")    
-    platform = openmm.Platform.getPlatformByName("Reference")
+    platform_name = 'OpenCL'
+    platform = openmm.Platform.getPlatformByName(platform_name)
     
     # Set up device to bind to.
     print "Selecting MPI communicator and selecting a GPU device..."
@@ -114,8 +119,10 @@ if __name__ == "__main__":
     ngpus = 1 # number of GPUs per system
     comm = MPI.COMM_WORLD # MPI communicator
     deviceid = comm.rank % ngpus # select a unique GPU for this node assuming block allocation (not round-robin)
-    platform.setPropertyDefaultValue('CudaDeviceIndex', '%d' % deviceid) # select Cuda device index
-    platform.setPropertyDefaultValue('OpenCLDeviceIndex', '%d' % deviceid) # select OpenCL device index
+    if platform_name == 'OpenCL':
+        platform.setPropertyDefaultValue('OpenCLDeviceIndex', '%d' % deviceid) # select OpenCL device index
+    elif platform_name == 'CUDA':
+        platform.setPropertyDefaultValue('CudaDeviceIndex', '%d' % deviceid) # select Cuda device index
     print "node '%s' deviceid %d / %d, MPI rank %d / %d" % (hostname, deviceid, ngpus, comm.rank, comm.size)
     # Make sure random number generators have unique seeds.
     seed = numpy.random.randint(sys.maxint - comm.size) + comm.rank
