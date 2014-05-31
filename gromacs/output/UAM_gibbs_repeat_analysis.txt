@@ -1,0 +1,20 @@
+Select group for output
+Selected 0: 'System'
+read in 500000 states
+Matrix:
+  0.6529   0.3096   0.0317   0.0048   0.0010   0.0001 
+  0.3153   0.4878   0.1549   0.0339   0.0071   0.0010 
+  0.0320   0.1537   0.4076   0.2303   0.1179   0.0585 
+  0.0048   0.0335   0.2296   0.2786   0.2491   0.2044 
+  0.0010   0.0070   0.1175   0.2490   0.3037   0.3218 
+  0.0001   0.0010   0.0582   0.2039   0.3212   0.4157 
+Eigenvalues
+      1    0.87  0.4154  0.2061 0.05329 0.001608 
+Estimated mixing time (empirical):    0.769 +/-    0.005
+average end-to-end trip time is:     7.18 +/-     0.12 (3481 trips)
+average forward end-to-end trip time is:     6.10 +/-     0.13 (1741 trips)
+average reverse end-to-end trip time is:     8.26 +/-     0.20 (1740 trips)
+autocorrelation time of states:     4.84 +/-     0.16
+(array([41564, 16335, 21026, 23337, 15869,  5739,  1048,    82,     1]), array([-0.5,  0.5,  1.5,  2.5,  3.5,  4.5,  5.5,  6.5,  7.5,  8.5]))
+Time correlation of number of particles less than   0.30:     4.54 +/-  0.160
+

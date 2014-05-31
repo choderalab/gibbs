@@ -1,0 +1,70 @@
+; Derived from parsing of runfiles/alat.top.orig
+[ defaults ]
+; nbfunc        comb-rule       gen-pairs       fudgeLJ fudgeQQ
+1               3               yes             0.5     0.5
+; comb-rule 3 is square-root sigma, the OPLSAA version
+
+[ atomtypes ]
+; ala
+ opls_ua    CH4     16.042     0       A    1.09e-00   1.230096
+ dum_ua     CH4     16.042     0       A    0.0           0.0
+
+
+[ bondtypes ]
+
+
+[ angletypes ]
+
+
+[ atomtypes ]
+ opls_111  OW      15.99940     0.000       A    3.15061e-01  6.363864e-01
+ opls_112  HW       1.00800     0.000       A    0.00000e-01  0.000000e-01
+
+[ moleculetype ]
+; molname       nrexcl
+SOL             1
+
+[ atoms ]
+1     opls_111  1       SOL              OW             1       -0.834
+2     opls_112  1       SOL             HW1             1        0.417
+3     opls_112  1       SOL             HW2             1        0.417
+
+[ settles ]
+; i     j       funct   length
+1       1       0.09572 0.15139
+
+;[ constraints ]
+; i     j       funct   length 
+;1       2       1       0.09572
+;1       3       1       0.09572
+;2       3       1       0.15139
+
+; added by mrshirts 6/9/03
+[ exclusions ]
+1 2 3
+2 1 3
+3 1 2
+
+
+[ moleculetype ]
+; Name                       nrexcl
+United_atom_methane             3
+
+[ atoms ]
+;   nr       type  resnr residue  atom   cgnr     charge       mass  typeB    chargeB  massB
+     1   opls_ua      1   UAM     CH4      1      0.0       16.042   dum_ua      0.000     16.042
+     
+[ bonds ]
+
+
+[ angles ] 
+
+[ system ]
+; Name
+United Atom Methane in water
+
+[ molecules ]
+; Compound             #mols
+United_atom_methane                 1
+SOL               893
+
