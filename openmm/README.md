@@ -17,5 +17,13 @@ This directory contains example files for performing Gibbs sampling replica exch
 * Python (we suggest the [Anaconda Scientific Python Distribution](https://store.continuum.io/cshop/anaconda/))
 * numpy
 
+## Running the scripts
+
+You may need to adapt the launch scripts to your own batch queue system.
+
+```
+# To launch via Torque/Moab
+tcsh scripts/parallel-tempering-allswap-torque.csh
+```
 
 
