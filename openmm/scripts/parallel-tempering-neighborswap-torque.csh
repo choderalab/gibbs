@@ -23,7 +23,7 @@
 ##PBS -V
 #
 # job name (default = name of script file)
-#PBS -N parallel-tempering-allswap
+#PBS -N parallel-tempering-neighborswap
 #
 # filename for standard output (default = <job_name>.o<job_id>)
 # at end of job, it is in directory from which qsub was executed

@@ -685,8 +685,7 @@ class ReplicaExchange(object):
             coordinates = self.replica_coordinates[replica_index]            
             context.setPositions(coordinates)
             # Assign Maxwell-Boltzmann velocities.
-            velocities = self._assign_Maxwell_Boltzmann_velocities(state.system, state.temperature)
-            context.setVelocities(velocities)
+            context.setVelocitiesToTemperature(state.temperature)
             # Run dynamics.
             integrator.step(self.nsteps_per_iteration)
             # Store final coordinates
@@ -755,8 +754,7 @@ class ReplicaExchange(object):
                 coordinates = self.replica_coordinates[replica_index]            
                 context.setPositions(coordinates)
                 # Assign Maxwell-Boltzmann velocities.
-                velocities = self._assign_Maxwell_Boltzmann_velocities(state.system, state.temperature)
-                context.setVelocities(velocities)
+                context.setVelocitiesToTemperature(state.temperature)
                 # Run dynamics.
                 integrator.step(self.nsteps_per_iteration)
                 # Store final coordinates
@@ -1212,60 +1210,6 @@ class ReplicaExchange(object):
             print ""
 
         return
-
-    def _assign_Maxwell_Boltzmann_velocities(self, system, temperature):
-        """
-        Generate Maxwell-Boltzmann velocities.
-
-        ARGUMENTS
-
-        system (simtk.chem.openmm.System) - the system for which velocities are to be assigned
-        temperature (simtk.unit.Quantity with units temperature) - the temperature at which velocities are to be assigned
-
-        RETURN VALUES
-
-        velocities (simtk.unit.Quantity wrapping numpy array of dimension natoms x 3 with units of distance/time) - drawn from the Maxwell-Boltzmann distribution at the appropriate temperature
-
-        TODO
-
-        This could be sped up by introducing vector operations.
-
-        """
-
-        # Get number of atoms
-        natoms = system.getNumParticles()
-
-        # Decorate System object with vector of masses for efficiency.
-        if not hasattr(system, 'masses'):
-            masses = simtk.unit.Quantity(numpy.zeros([natoms,3], numpy.float64), units.amu)
-            for atom_index in range(natoms):
-                mass = system.getParticleMass(atom_index) # atomic mass
-                masses[atom_index,:] = mass
-            setattr(system, 'masses', masses)
-
-        # Retrieve masses.
-        masses = getattr(system, 'masses')
-  
-        # Compute thermal energy and velocity scaling factors.
-        kT = kB * temperature # thermal energy
-        sigma2 = kT / masses
-
-        # Assign velocities from the Maxwell-Boltzmann distribution.
-        # TODO: This is wacky because units.sqrt cannot operate on numpy vectors.
-        
-        # NEW (working) CODE
-        velocity_unit = units.nanometers / units.picoseconds
-        velocities = units.Quantity(numpy.sqrt(sigma2 / (velocity_unit**2)) * numpy.random.randn(natoms, 3), velocity_unit)
-        
-        # OLD (broken) CODE
-        #velocities = units.Quantity(numpy.sqrt(sigma2/sigma2.unit) * numpy.random.randn(natoms, 3), units.sqrt(sigma2.unit))
-
-        # DEBUG: Print kinetic energy.
-        #kinetic_energy = units.sum(units.sum(0.5 * masses * velocities**2)) 
-        #print kinetic_energy / units.kilocalories_per_mole
-    
-        # Return velocities
-        return velocities
 
 #=============================================================================================
 # Parallel tempering
